@@ -1,33 +1,39 @@
 // STAR MATCH - Starting Template
+// TIP: use map/filter/reduce
+// TIP: make things dynamic
+// TIP: extract components
+// TIP: split responsabilities by separating components; use items that share similar data & behavior
+import { useState } from "react";
+
+// making Number its own component
+const PlayNumber = props => (
+  <button className="number">{props.number} </button>  
+);
 
 const StarMatch = () => {
+    // making the stars a state element when they have a value that will change (tip)
+    const [stars, setStars] = useState(utils.random(1, 9));  
     return (
       <div className="game">
         <div className="help">
           Pick 1 or more numbers that sum to the number of stars
         </div>
         <div className="body">
+
           <div className="left">
-            <div className="star" />
-            <div className="star" />
-            <div className="star" />
-            <div className="star" />
-            <div className="star" />
-            <div className="star" />
-            <div className="star" />
-            <div className="star" />
-            <div className="star" />
+          {/* using dynamic expression */}
+          {/* mapping to get stars populated */}
+            {utils.range(1, stars).map(starId => 
+            <div key={starId} className="star" />  
+            )}
           </div>
+
           <div className="right">
-            <button className="number">1</button>
-            <button className="number">2</button>
-            <button className="number">3</button>
-            <button className="number">4</button>
-            <button className="number">5</button>
-            <button className="number">6</button>
-            <button className="number">7</button>
-            <button className="number">8</button>
-            <button className="number">9</button>
+          {/* using dynamic expression */}
+          {/* mapping to get numbers populated */}
+            {utils.range(1, 9).map(number => 
+              <PlayNumber key={number} number={number} />
+            )}
           </div>
         </div>
         <div className="timer">Time Remaining: 10</div>
