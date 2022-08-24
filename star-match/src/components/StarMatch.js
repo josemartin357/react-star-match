@@ -1,18 +1,54 @@
 // STAR MATCH - Starting Template
 // TIP: use map/filter/reduce
 // TIP: make things dynamic
+// TIP: lean javascript closures (see onClick test)
 // TIP: extract components
 // TIP: split responsabilities by separating components; use items that share similar data & behavior
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 // making Number its own component
 const PlayNumber = props => (
-  <button className="number">{props.number} </button>  
+  // Testing onClick: onClick={()=> console.log('Num', props.number)}
+  <button 
+  className="number" 
+  style={{ backgroundColor: colors[props.status]}}
+  onClick={()=> console.log('Num', props.number)}>
+  {props.number} 
+  </button>  
 );
+
+
+// making stars its own component
+const StarsDisplay = props => (
+// using dynamic expression
+// mapping to get stars populated
+// what does Fragment do????
+<Fragment>
+  {utils.range(1, props.count).map(starId => 
+  <div key={starId} className="star" />  
+  )}
+</Fragment>
+);
+
 
 const StarMatch = () => {
     // making the stars a state element when they have a value that will change (tip)
     const [stars, setStars] = useState(utils.random(1, 9));  
+    const [availableNums, setAvailablenums] = useState([1, 2, 3, 4, 5])
+    const [candidateNums, setCandidateNums] = useState([2, 3])
+
+    const candidatesAreWrong = utils.sum(candidateNums) > stars;
+    // function that will pass number status
+    const numberStatus = (number) => {
+      if (!availableNums.includes(number)) {
+        return 'used';
+      }
+      if (candidateNums.includes(number)) {
+        return candidatesAreWrong ? 'wrong': 'candidate';
+      }
+      return 'available';
+    };
+
     return (
       <div className="game">
         <div className="help">
@@ -21,18 +57,20 @@ const StarMatch = () => {
         <div className="body">
 
           <div className="left">
-          {/* using dynamic expression */}
-          {/* mapping to get stars populated */}
-            {utils.range(1, stars).map(starId => 
-            <div key={starId} className="star" />  
-            )}
+            <StarsDisplay 
+            count={stars}
+            />
           </div>
 
           <div className="right">
-          {/* using dynamic expression */}
-          {/* mapping to get numbers populated */}
+          {/* using dynamic expression/mapping to get numbers populated */}
+          {/* TIP: with components, think: 1- UI logic to describe state, 2- App logic to change state */}
             {utils.range(1, 9).map(number => 
-              <PlayNumber key={number} number={number} />
+              <PlayNumber 
+              key={number} 
+              number={number} 
+              status={numberStatus(number)}
+              />
             )}
           </div>
         </div>
