@@ -1,44 +1,38 @@
-// STAR MATCH - Starting Template
-// TIP: use map/filter/reduce
-// TIP: make things dynamic
-// TIP: lean javascript closures (see onClick test)
-// TIP: extract components
-// TIP: split responsabilities by separating components; use items that share similar data & behavior
 import { Fragment, useState } from "react";
 
-// making Number its own component
+// number component
 const PlayNumber = props => (
-  // Testing onClick: onClick={()=> console.log('Num', props.number)}
+  // Here is how to test onClick: onClick={()=> console.log('Num', props.number)}
   <button 
   className="number" 
   style={{ backgroundColor: colors[props.status]}}
-  onClick={()=> console.log('Num', props.number)}>
+  onClick={()=> props.onClick(props.number, props.status)}>
   {props.number} 
   </button>  
 );
 
 
-// making stars its own component
+// stars component
 const StarsDisplay = props => (
-// using dynamic expression
-// mapping to get stars populated
-// what does Fragment do????
+// using dynamic expression and mapping to get stars populated
+// Fragment is to group multiple elements without adding extra node to DOM
 <Fragment>
-  {utils.range(1, props.count).map(starId => 
+  {utils.range(1, props.count).map(starId => (
   <div key={starId} className="star" />  
-  )}
+  ))}
 </Fragment>
 );
 
 
 const StarMatch = () => {
-    // making the stars a state element when they have a value that will change (tip)
+    // making stars a state element when they have a value that will change (tip)
     const [stars, setStars] = useState(utils.random(1, 9));  
-    const [availableNums, setAvailablenums] = useState([1, 2, 3, 4, 5])
-    const [candidateNums, setCandidateNums] = useState([2, 3])
+    const [availableNums, setAvailableNums] = useState(utils.range(1, 9));
+    const [candidateNums, setCandidateNums] = useState([]);
 
     const candidatesAreWrong = utils.sum(candidateNums) > stars;
-    // function that will pass number status
+
+    // function to pass number status
     const numberStatus = (number) => {
       if (!availableNums.includes(number)) {
         return 'used';
@@ -49,27 +43,51 @@ const StarMatch = () => {
       return 'available';
     };
 
+    // funtion to define what will happen with every number click
+    const onNumberClick = (number, currentStatus) => {
+      // currentStatus => newStatus
+      if (currentStatus === 'used') {
+        return;
+      }
+  
+      const newCandidateNums =
+        currentStatus === 'available'
+          ? candidateNums.concat(number)
+          : candidateNums.filter(cn => cn !== number);
+  
+      if (utils.sum(newCandidateNums) !== stars) {
+        setCandidateNums(newCandidateNums);
+      } else {
+        const newAvailableNums = availableNums.filter(
+          n => !newCandidateNums.includes(n)
+        );
+        setStars(utils.randomSumIn(newAvailableNums, 9));
+        setAvailableNums(newAvailableNums);
+        setCandidateNums([]);
+      }
+    };
+
+
     return (
       <div className="game">
         <div className="help">
           Pick 1 or more numbers that sum to the number of stars
         </div>
         <div className="body">
-
           <div className="left">
             <StarsDisplay 
             count={stars}
             />
           </div>
-
           <div className="right">
-          {/* using dynamic expression/mapping to get numbers populated */}
           {/* TIP: with components, think: 1- UI logic to describe state, 2- App logic to change state */}
+          {/* using dynamic expression/mapping to get numbers populated */}
             {utils.range(1, 9).map(number => 
               <PlayNumber 
               key={number} 
               number={number} 
               status={numberStatus(number)}
+              onClick={onNumberClick}
               />
             )}
           </div>
@@ -118,3 +136,9 @@ const StarMatch = () => {
   };
   
 export default StarMatch;
+
+// TIPS
+// - use map/filter/reduce 
+// - make things dynamic 
+// - lean javascript closures (see onClick test) 
+// - extract components - split responsabilities by separating components; use items that share similar data & behavior
