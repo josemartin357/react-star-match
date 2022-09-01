@@ -1,6 +1,6 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
-import StarMatch from './components/StarMatch';
+import StarMatch from './components/StarMatch.js';
 
 function App() {
   return (
